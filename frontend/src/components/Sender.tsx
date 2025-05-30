@@ -15,14 +15,23 @@ const Sender = () => {
             async function webSender(){
             //Create an offer 
             const pc = new RTCPeerConnection();
-            const offer = await pc.createOffer(); // SDP
-            await pc.setLocalDescription(offer);
-            socket?.send(JSON.stringify({type: "createOffer" , sdp: offer}))
+            pc.onnegotiationneeded = async () => {
+                const offer = await pc.createOffer(); // SDP
+                await pc.setLocalDescription(offer);
+                socket?.send(JSON.stringify({type: "createOffer" , sdp: offer}))
+            }
+            pc.onicecandidate = (e) => {
+                if(e.candidate){
+                    socket?.send(JSON.stringify({type: "addIceCandidate" , candidate: e.candidate}))
+                }
+            }
             if (socket) {
                 socket.onmessage = async (e) => {
                     const message = JSON.parse(e.data);
                     if(message.type === "answer"){
                         await pc.setRemoteDescription(message.answer);
+                    }else if(message.type === "iceCandidate"){
+                        pc.addIceCandidate(message.candidate)
                     }
                 };
             }

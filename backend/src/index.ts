@@ -25,15 +25,14 @@ wss.on("connection" , (ws) => {
         }else if(message.type === "createAnswer"){
             console.log("Answer made")
             if(ws != receiverSocket) return;
-            console.log(message.answer)
             senderSocket?.send(JSON.stringify({type: "answer" , answer: message.answer})) // Here the server is sending the answer to the sender
         // add ice candidtes
-        }else if(message.type === "addIceCandidates"){
+        }else if(message.type === "addIceCandidate"){
             if(ws === senderSocket){
-                receiverSocket?.send(JSON.stringify({type: "iceCcandidate" , candidate: message.candidate}))
+                receiverSocket?.send(JSON.stringify({type: "iceCandidate" , candidate: message.candidate}))
             }
             if(ws === receiverSocket){
-                senderSocket?.send(JSON.stringify({type: "iceCcandidate" , candidate: message.candidate}))
+                senderSocket?.send(JSON.stringify({type: "iceCandidate" , candidate: message.candidate}))
             }
         }
     })

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 const Receiver = () => {
+    let pc: RTCPeerConnection | null = null;
         useEffect(() => {
             const socket = new WebSocket('ws://localhost:8080');
             socket.onopen = () => {
@@ -9,12 +10,18 @@ const Receiver = () => {
             socket.onmessage = async (e) => {
                 const message = JSON.parse(e.data);
                 if(message.type === "offer"){
-                    console.log("Inside receiver")
-                    const pc = new RTCPeerConnection();
+                    pc = new RTCPeerConnection();
                     await pc.setRemoteDescription(message.offer)
+                    pc.onicecandidate = (e) => {
+                        if(e.candidate){
+                        socket?.send(JSON.stringify({type: "addIceCandidate" , candidate: e.candidate}))
+                        }
+                    }
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer)
                     socket.send(JSON.stringify({type: "createAnswer" , answer: answer}))
+                }else if(message.type === "iceCandidate"){
+                    pc?.addIceCandidate(message.candidate)
                 }
             }
         } , [])
