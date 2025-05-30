@@ -9,11 +9,12 @@ const Receiver = () => {
             socket.onmessage = async (e) => {
                 const message = JSON.parse(e.data);
                 if(message.type === "offer"){
+                    console.log("Inside receiver")
                     const pc = new RTCPeerConnection();
                     await pc.setRemoteDescription(message.offer)
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer)
-                    socket.send(JSON.stringify({type: "createAnswer" , sdp: answer}))
+                    socket.send(JSON.stringify({type: "createAnswer" , answer: answer}))
                 }
             }
         } , [])

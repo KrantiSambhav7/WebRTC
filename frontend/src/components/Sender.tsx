@@ -19,10 +19,10 @@ const Sender = () => {
             await pc.setLocalDescription(offer);
             socket?.send(JSON.stringify({type: "createOffer" , sdp: offer}))
             if (socket) {
-                socket.onmessage = (e) => {
-                    const data = JSON.parse(e.data);
-                    if(data.type === "answer"){
-                        pc.setRemoteDescription(data.answer);
+                socket.onmessage = async (e) => {
+                    const message = JSON.parse(e.data);
+                    if(message.type === "answer"){
+                        await pc.setRemoteDescription(message.answer);
                     }
                 };
             }

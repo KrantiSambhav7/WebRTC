@@ -30,8 +30,8 @@ wss.on("connection", (ws) => {
             console.log("Answer made");
             if (ws != receiverSocket)
                 return;
-            console.log(message.sdp);
-            senderSocket === null || senderSocket === void 0 ? void 0 : senderSocket.send(JSON.stringify({ type: "answer", answer: message.sdp })); // Here the server is sending the answer to the sender
+            console.log(message.answer);
+            senderSocket === null || senderSocket === void 0 ? void 0 : senderSocket.send(JSON.stringify({ type: "answer", answer: message.answer })); // Here the server is sending the answer to the sender
             // add ice candidtes
         }
         else if (message.type === "addIceCandidates") {
