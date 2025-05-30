@@ -9,21 +9,26 @@ wss.on("connection" , (ws) => {
     ws.on("message" , (data: any) => {
         const message = JSON.parse(data);
             // identify-as-user
-        if(message.type === "identify-as-sender"){
+        if(message.type === "sender"){
+            console.log("Sender set")
             senderSocket = ws;
             // identify-as-receiver
-        }else if(message.type === "identify-as-receiver"){
+        }else if(message.type === "receiver"){
+            console.log("Receiver set")
             receiverSocket = ws;
             // create offer
-        }else if(message.type === "create-offer"){
+        }else if(message.type === "createOffer"){
+            console.log("Offer made")
             if(ws != senderSocket) return;
-            receiverSocket?.send(JSON.stringify({type: "offer" , offer: message.offer})) // Here the server is sending the offer to the receiver 
+            receiverSocket?.send(JSON.stringify({type: "offer" , offer: message.sdp})) // Here the server is sending the offer to the receiver 
          // create answer
-        }else if(message.type === "create-answer"){
+        }else if(message.type === "createAnswer"){
+            console.log("Answer made")
             if(ws != receiverSocket) return;
-            senderSocket?.send(JSON.stringify({type: "answer" , answer: message.offer})) // Here the server is sending the answer to the sender
+            console.log(message.sdp)
+            senderSocket?.send(JSON.stringify({type: "answer" , answer: message.sdp})) // Here the server is sending the answer to the sender
         // add ice candidtes
-        }else if(message.type === "add-ice-candidates"){
+        }else if(message.type === "addIceCandidates"){
             if(ws === senderSocket){
                 receiverSocket?.send(JSON.stringify({type: "iceCcandidate" , candidate: message.candidate}))
             }

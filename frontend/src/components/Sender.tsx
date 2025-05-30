@@ -5,8 +5,9 @@ const Sender = () => {
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8080');
         socket.onopen = () => {
-            socket.send(JSON.stringify({type: "socket"}))
+            socket.send(JSON.stringify({type: "sender"}))
         }
+        setSocket(socket);
     } , [])
   return (
     <div>
@@ -20,8 +21,8 @@ const Sender = () => {
             if (socket) {
                 socket.onmessage = (e) => {
                     const data = JSON.parse(e.data);
-                    if(data.type === "createAnswer"){
-                        pc.setRemoteDescription(data.sdp);
+                    if(data.type === "answer"){
+                        pc.setRemoteDescription(data.answer);
                     }
                 };
             }
