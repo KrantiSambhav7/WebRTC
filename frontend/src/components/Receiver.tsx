@@ -6,6 +6,16 @@ const Receiver = () => {
             socket.onopen = () => {
                 socket.send(JSON.stringify({type: "receiver"}))
             }
+            socket.onmessage = async (e) => {
+                const message = JSON.parse(e.data);
+                if(message.type === "createOffer"){
+                    const pc = new RTCPeerConnection();
+                    const answer = await pc.createAnswer();
+                    pc.setRemoteDescription(message.sdp)
+                    await pc.setLocalDescription(answer)
+                    socket.send(JSON.stringify({type: "createAnswer" , sdp: answer}))
+                }
+            }
         } , [])
   return (
     <div>Receiver</div>
